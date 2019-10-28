@@ -37,6 +37,14 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+app.get('/api/shorturl/:id', async (req, res) => {
+  const packedUrl = await Url.findOne({ short_url: req.params.id });
+
+  if (!packedUrl) return res.status(404).send("No shortened url found.");
+
+  res.redirect(packedUrl.original_url);
+});
+
 app.post("/api/shorturl/new", async (req, res) => {
   const url_string = Ruler.parse(req.body.url);
 
@@ -46,8 +54,7 @@ app.post("/api/shorturl/new", async (req, res) => {
     if (error) {
       return res.json({ error: "invalid URL" });
     }
-    
-    console.log('hello');
+
     let url = await Url.findOne({ "original_url": req.body.url });
 
     if (url) {
@@ -62,7 +69,7 @@ app.post("/api/shorturl/new", async (req, res) => {
       short_url: Math.floor(Math.random() * 999)
     });
 
-    url.save();
+    await url.save();
 
     return res.json({
       original_url: url.original_url,
