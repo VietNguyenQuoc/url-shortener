@@ -46,12 +46,11 @@ app.post("/api/shorturl/new", async (req, res) => {
     if (error) {
       return res.json({ error: "invalid URL" });
     }
-
+    
+    console.log('hello');
     let url = await Url.findOne({ "original_url": req.body.url });
 
     if (url) {
-      console.log(url);
-
       return res.json({
         original_url: url.original_url,
         short_url: url.short_url
@@ -63,9 +62,7 @@ app.post("/api/shorturl/new", async (req, res) => {
       short_url: Math.floor(Math.random() * 999)
     });
 
-    console.log(url);
-
-    await url.save();
+    url.save();
 
     return res.json({
       original_url: url.original_url,
